@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/newsTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:padding="10dp"
+        android:text="title"
+        android:textSize="20sp" />
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp">
+
+        <TextView
+            android:id="@+id/category"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="社会" />
+
+        <TextView
+            android:id="@+id/newsTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:gravity="end"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:text="2020 5-30" />
+
+
+    </RelativeLayout>
+
+    <ImageView
+        android:src="#E5E8E8"
+        android:id="@+id/pic"
+        android:scaleType="centerCrop"
+        android:layout_margin="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="180dp"/>
+
+    <TextView
+        android:textSize="18sp"
+        android:maxLines="4"
+        android:ellipsize="end"
+        android:id="@+id/newsContent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:text="内容"
+        android:textColor="#000" />
+
+    <TextView
+        android:gravity="end"
+        android:padding="10dp"
+        android:text="来源"
+        android:id="@+id/source"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@android:color/darker_gray" />
+
+</LinearLayout>
