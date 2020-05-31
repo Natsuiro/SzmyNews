@@ -9,9 +9,8 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 
-import com.szmy.szmynews.ui.ContentFragment;
+import com.szmy.szmynews.ui.NewsListFragment;
 
-import java.util.HashMap;
 import java.util.List;
 
 public class ContentAdapter extends FragmentPagerAdapter {
@@ -30,7 +29,7 @@ public class ContentAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int position) {
         Log.d(TAG, "getItem: "+position);
         String key = mTitles.get(position);
-        return new ContentFragment(key, mContext);
+        return new NewsListFragment(key, mContext);
     }
     @Override
     public int getCount() {

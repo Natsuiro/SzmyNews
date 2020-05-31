@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_person"
+            android:title="@string/person"
+            />
+        <item
+            android:id="@+id/nav_findMore"
+            android:title="@string/findMore"
+            />
+        <item
+            android:id="@+id/nav_setting"
+            android:title="@string/setting"
+            />
+        <item
+            android:id="@+id/nav_about"
+            android:title="@string/about"
+            />
+    </group>
+</menu>

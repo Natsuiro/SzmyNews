@@ -1,9 +1,11 @@
 package com.szmy.szmynews.ui;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
@@ -26,7 +28,7 @@ import com.szmy.szmynews.presenter.NewsPresenter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ContentFragment extends Fragment implements NewsContract.DataView {
+public class NewsListFragment extends Fragment implements NewsContract.DataView {
     //每一个页面的形式是一样的，根据keyWord来选择加载哪些数据
     private String mKeyWord;
     private Context mContext;
@@ -42,7 +44,7 @@ public class ContentFragment extends Fragment implements NewsContract.DataView {
     private boolean mHaveLoadData;
     private static final String TAG = "ContentFragment";
 
-    public ContentFragment(String keyWord, Context context) {
+    public NewsListFragment(String keyWord, Context context) {
         this.mKeyWord = keyWord;
         this.mContext = context;
     }
@@ -67,6 +69,17 @@ public class ContentFragment extends Fragment implements NewsContract.DataView {
     private void initData() {
         mDataList = new ArrayList<>();
         newsAdapter = new NewsAdapter(mDataList, mContext);
+        newsAdapter.setOnItemClickListener(new NewsAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(View v, SzmyNewsBean newsBean, int position) {
+                //根据点击的item打开详情页面展示更多数据
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("newsBean",newsBean);
+                Intent intent = new Intent(mContext, NewsDetailActivity.class);
+                intent.putExtra("newsDetail",bundle);
+                startActivity(intent);
+            }
+        });
         mListener = new RecyclerListener();
     }
 
@@ -75,6 +88,23 @@ public class ContentFragment extends Fragment implements NewsContract.DataView {
         recyclerView.setLayoutManager(new LinearLayoutManager(mContext));
         recyclerView.setAdapter(newsAdapter);
         recyclerView.addOnScrollListener(mListener);
+        recyclerView.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
+            @Override
+            public boolean onInterceptTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) {
+                return false;
+            }
+
+            @Override
+            public void onTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) {
+
+            }
+
+            @Override
+            public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
+
+            }
+        });
+
 
         refreshLayout = mViewRoot.findViewById(R.id.swipeRefresh);
         refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {

@@ -17,7 +17,8 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
 
     private List<SzmyNewsBean> mList;
     private Context mContext;
-    public NewsAdapter(List<SzmyNewsBean> list,Context context){
+
+    public NewsAdapter(List<SzmyNewsBean> list, Context context) {
         mList = list;
         mContext = context;
     }
@@ -29,7 +30,17 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
     }
 
     @Override
-    public void onBindViewHolder(@NonNull NewsViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull NewsViewHolder holder, final int position) {
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mListener != null) {
+                    mListener.onItemClick(v, mList.get(position), position);
+                }
+            }
+        });
+
         holder.itemView.bindView(mList.get(position));
     }
 
@@ -38,11 +49,26 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
         return mList.size();
     }
 
-    static class NewsViewHolder extends RecyclerView.ViewHolder{
+    static class NewsViewHolder extends RecyclerView.ViewHolder {
         NewsItemView itemView;
+
         NewsViewHolder(@NonNull NewsItemView itemView) {
             super(itemView);
             this.itemView = itemView;
         }
+    }
+
+
+    //私有属性
+    private OnItemClickListener mListener = null;
+
+    //setter方法
+    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
+        this.mListener = onItemClickListener;
+    }
+
+    //回调接口
+    public interface OnItemClickListener {
+        void onItemClick(View v, SzmyNewsBean newsBean, int position);
     }
 }
