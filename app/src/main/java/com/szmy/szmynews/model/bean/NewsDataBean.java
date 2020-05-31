@@ -1,6 +1,8 @@
 package com.szmy.szmynews.model.bean;
 
-public class NewsDataBean {
+import java.io.Serializable;
+
+public class NewsDataBean implements Serializable {
 
     private int status;
     private String msg;

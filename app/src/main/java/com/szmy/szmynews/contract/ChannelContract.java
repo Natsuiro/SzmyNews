@@ -1,6 +1,5 @@
 package com.szmy.szmynews.contract;
 import com.szmy.szmynews.model.bean.ChannelBean;
-import com.szmy.szmynews.presenter.BasePresenter;
 
 public interface ChannelContract {
 

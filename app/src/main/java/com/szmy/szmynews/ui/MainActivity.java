@@ -10,14 +10,14 @@ import com.szmy.szmynews.adapter.ContentAdapter;
 import com.szmy.szmynews.contract.ChannelContract;
 import com.szmy.szmynews.R;
 import com.szmy.szmynews.model.bean.ChannelBean;
-import com.szmy.szmynews.presenter.MainPresenter;
+import com.szmy.szmynews.presenter.ChannelPresenter;
 
 import java.util.List;
 
 
 
 public class MainActivity extends AppCompatActivity implements ChannelContract.DataView {
-    private MainPresenter presenter;
+    private ChannelPresenter presenter;
     private static final String TAG = "MainActivity";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity implements ChannelContract.D
     }
 
     private void init() {
-        presenter = new MainPresenter();
+        presenter = new ChannelPresenter();
         presenter.attach(this);
         loadChannel();
     }

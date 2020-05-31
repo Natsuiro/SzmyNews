@@ -1,6 +1,8 @@
 package com.szmy.szmynews.model.bean;
 
-public class SzmyNewsBean {
+import java.io.Serializable;
+
+public class SzmyNewsBean implements Serializable {
 
     private String title;
     private String time;

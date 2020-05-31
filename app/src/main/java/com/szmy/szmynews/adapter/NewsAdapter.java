@@ -25,9 +25,6 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
     @NonNull
     @Override
     public NewsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-
-
-
         return new NewsViewHolder(new NewsItemView(mContext));
     }
 

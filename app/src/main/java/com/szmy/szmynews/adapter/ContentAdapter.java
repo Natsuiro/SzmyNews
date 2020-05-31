@@ -17,13 +17,11 @@ import java.util.List;
 public class ContentAdapter extends FragmentPagerAdapter {
 
     private static final String TAG = "MyAdapter";
-    private HashMap<String,Fragment> hashMap;
     private List<String> mTitles ;
     private Context mContext;
 
     public ContentAdapter(@NonNull FragmentManager fm, List<String> titles, Context context) {
         super(fm, FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
-        hashMap = new HashMap<>();
         mTitles = titles;
         mContext = context;
     }

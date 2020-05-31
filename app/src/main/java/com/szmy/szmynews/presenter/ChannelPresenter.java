@@ -7,7 +7,7 @@ import com.szmy.szmynews.model.bean.ChannelBean;
 
 
 
-public class MainPresenter implements ChannelContract.Presenter {
+public class ChannelPresenter implements ChannelContract.Presenter {
 
     private ChannelContract.DataView mView;
 
@@ -26,7 +26,7 @@ public class MainPresenter implements ChannelContract.Presenter {
         exeLoadChannel();
     }
     private void exeLoadChannel() {
-        SzmyModel.instance().getChannel(new SzmyModel.SzmyCallBack<ChannelBean>() {
+        SzmyModel.instance().getNewsChannel(new SzmyModel.SzmyCallBack<ChannelBean>() {
             @Override
             public void onResponse(ChannelBean body) {
                 mView.onRequestSuccess(body);

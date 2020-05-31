@@ -1,8 +1,9 @@
 package com.szmy.szmynews.model.bean;
 
+import java.io.Serializable;
 import java.util.List;
 //json
-public class ChannelBean {
+public class ChannelBean implements Serializable {
 
     private int status;
     private String msg;

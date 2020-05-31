@@ -6,11 +6,18 @@ public class App {
 
     private static final String appKey = "59329b08598d54e3";
     private static final String baseUrl = "https://api.jisuapi.com/news/";
+    private static final String newsChannel = "channel";
+    private static final String news = "get";
     public static String getAppKey() {
         return appKey;
     }
     public static String getBaseUrl() {
         return baseUrl;
     }
-
+    public static String getNewsChannel() {
+        return newsChannel;
+    }
+    public static String getNews() {
+        return news;
+    }
 }

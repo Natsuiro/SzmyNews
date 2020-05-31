@@ -39,6 +39,7 @@ public class ContentFragment extends Fragment implements NewsContract.DataView {
     private int cur = 0;
     private int num = 10;
     private NewsPresenter presenter;
+    private boolean mHaveLoadData;
     private static final String TAG = "ContentFragment";
 
     public ContentFragment(String keyWord, Context context) {
@@ -52,6 +53,7 @@ public class ContentFragment extends Fragment implements NewsContract.DataView {
         mViewRoot = View.inflate(mContext, R.layout.content_layout, null);
         presenter = new NewsPresenter();
         presenter.attach(this);
+
         return mViewRoot;
     }
 
@@ -164,7 +166,7 @@ public class ContentFragment extends Fragment implements NewsContract.DataView {
                     lastVisibleItem = layoutManager.findLastCompletelyVisibleItemPosition();
                     int totalItemCount = layoutManager.getItemCount();
                     // 判断是否滚动到倒数第二个的时候，并且是向右滚动
-                    if (lastVisibleItem == totalItemCount - 2 && isSlidingDown) {
+                    if (lastVisibleItem == totalItemCount - 1 && isSlidingDown) {
                         //加载更多功能的代码
                         loadMore();
                     }

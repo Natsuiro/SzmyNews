@@ -1,8 +1,9 @@
 package com.szmy.szmynews.model.bean;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class SzmyResult {
+public class SzmyResult implements Serializable {
 
     private String channel;
     private int num;
