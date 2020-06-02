@@ -2,9 +2,17 @@ package com.szmy.szmynews.ui;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -14,9 +22,14 @@ import com.szmy.szmynews.model.bean.SzmyNewsBean;
 
 import java.io.Serializable;
 
+/**
+ * 展示新闻的详细内容，通过webView加载新闻的url
+ */
+@SuppressLint("SetJavaScriptEnabled")
 public class NewsDetailActivity extends AppCompatActivity {
 
     private SzmyNewsBean newsBean = null;
+    private static final String TAG = "NewsDetailActivity";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,28 +49,33 @@ public class NewsDetailActivity extends AppCompatActivity {
         });
 
         if (newsBean!=null){
+            final WebView webView = findViewById(R.id.webView);
+            webView.getSettings().setJavaScriptEnabled(true);
+            webView.getSettings().setDomStorageEnabled(true);
+            webView.getSettings().setSupportMultipleWindows(true);
+            webView.getSettings().setLoadWithOverviewMode(true);
+            webView.getSettings().setUseWideViewPort(true);
+            webView.setWebViewClient(new WebViewClient());
+            webView.loadUrl(newsBean.getUrl());
+            Log.d(TAG, "initView: "+newsBean.getUrl());
 
-            TextView newsTitle = findViewById(R.id.detail_newsTitle);
-            newsTitle.setText(newsBean.getTitle());
+            webView.setOnKeyListener(new View.OnKeyListener() {
+                @Override
+                public boolean onKey(View v, int keyCode, KeyEvent event) {
+                    if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                        //按返回键操作并且能回退网页
+                        if (keyCode == KeyEvent.KEYCODE_BACK && webView.canGoBack()) {
+                            //后退
+                            webView.goBack();
+                            return true;
+                        }
+                    }
+                    return false;
+                }
 
-            TextView newsTime = findViewById(R.id.detail_newsTime);
-            newsTime.setText(newsBean.getTime());
-
-            TextView category = findViewById(R.id.detail_category);
-            category.setText(newsBean.getCategory());
-
-            TextView newsContent = findViewById(R.id.detail_newsContent);
-            newsContent.setText(newsBean.getContent());
-
-            TextView source = findViewById(R.id.detail_source);
-            source.setText(newsBean.getSrc());
-
-            ImageView pic  = findViewById(R.id.detail_pic);
-            Glide.with(this).load(newsBean.getPic()).into(pic);
+            });
 
         }
-
-
     }
 
     private void initData() {
@@ -66,5 +84,10 @@ public class NewsDetailActivity extends AppCompatActivity {
         if (newsDetail != null){
             newsBean = (SzmyNewsBean) newsDetail.getSerializable("newsBean");
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
     }
 }

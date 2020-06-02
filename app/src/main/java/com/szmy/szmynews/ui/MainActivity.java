@@ -27,7 +27,10 @@ import com.szmy.szmynews.presenter.ChannelPresenter;
 import java.util.List;
 
 
-
+/**
+ * 主页面，通过viewPager + Fragment 展示新闻
+ * 通过侧滑抽屉可以打开其他页面
+ */
 public class MainActivity extends AppCompatActivity implements ChannelContract.DataView {
     private ChannelPresenter presenter;
     private static final String TAG = "MainActivity";
