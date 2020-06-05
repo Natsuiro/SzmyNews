@@ -1,16 +1,16 @@
 package com.szmy.szmynews.contract;
 
-import com.szmy.szmynews.model.bean.NewsBean;
+import com.szmy.szmynews.model.bean.ChannelBean;
+import com.szmy.szmynews.model.bean.SearchBean;
 
-public interface NewsContract {
-
+public interface SearchContract {
     interface Presenter{
-        void attach(DataView view);
+        void attach(SearchContract.DataView view);
         void detach();
-        void loadNews(String channel,int start,int num);
+        void searchWithKeWord(String keyWord);
     }
 
-    interface DataView {
+    interface DataView{
         /**
          * 开始请求时
          */
@@ -22,12 +22,11 @@ public interface NewsContract {
          * 由于布局内容基本使用列表展示，因此需要返回List集合
          * 其中已经对数据进行封装，view层可以直接使用数据
          */
-        void onLoadSuccess(NewsBean data);
+        void onRequestSuccess(SearchBean data);
         /**
          * 请求失败，可能由于参数错误，服务器异常等原因
          * view层可以获得错误码和错误信息
          */
-        void onLoadFailed(String msg);
+        void onRequestFailed(String msg);
     }
-
 }

@@ -1,18 +1,20 @@
 package com.szmy.szmynews.presenter;
 
+import android.os.Handler;
+import android.os.Looper;
+import android.text.TextUtils;
+
 import com.szmy.szmynews.contract.ChannelContract;
+import com.szmy.szmynews.contract.SearchContract;
 import com.szmy.szmynews.model.SzmyModel;
 import com.szmy.szmynews.model.bean.ChannelBean;
+import com.szmy.szmynews.model.bean.SearchBean;
 
-
-
-
-public class ChannelPresenter extends BasePresenter implements ChannelContract.Presenter {
-
-    private ChannelContract.DataView mView;
+public class SearchPresenter extends BasePresenter implements SearchContract.Presenter {
+    private SearchContract.DataView mView;
 
     @Override
-    public void attach(ChannelContract.DataView view) {
+    public void attach(SearchContract.DataView view) {
         this.mView = view;
     }
 
@@ -20,15 +22,18 @@ public class ChannelPresenter extends BasePresenter implements ChannelContract.P
     public void detach() {
         mView = null;
     }
+
     @Override
-    public void loadChannel(){
+    public void searchWithKeWord(String keyWord) {
+        if (TextUtils.isEmpty(keyWord)) return;
         mView.onRequestStart();
-        exeLoadChannel();
+        execSearch(keyWord);
     }
-    private void exeLoadChannel() {
-        SzmyModel.instance().getNewsChannel(new SzmyModel.SzmyCallBack<ChannelBean>() {
+
+    private void execSearch(String keyWord) {
+        SzmyModel.instance().searchWithKeyWord(keyWord, new SzmyModel.SzmyCallBack<SearchBean>() {
             @Override
-            public void onResponse(final ChannelBean body) {
+            public void onResponse(final SearchBean body) {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -37,7 +42,6 @@ public class ChannelPresenter extends BasePresenter implements ChannelContract.P
                 });
 
             }
-
             @Override
             public void onFailed(final String msg) {
                 runOnUiThread(new Runnable() {
@@ -50,5 +54,4 @@ public class ChannelPresenter extends BasePresenter implements ChannelContract.P
             }
         });
     }
-
 }

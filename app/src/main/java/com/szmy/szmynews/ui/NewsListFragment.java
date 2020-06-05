@@ -20,9 +20,9 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.szmy.szmynews.R;
 import com.szmy.szmynews.adapter.NewsAdapter;
 import com.szmy.szmynews.contract.NewsContract;
-import com.szmy.szmynews.model.bean.NewsDataBean;
-import com.szmy.szmynews.model.bean.SzmyNewsBean;
-import com.szmy.szmynews.model.bean.SzmyResult;
+import com.szmy.szmynews.model.bean.NewsBean;
+import com.szmy.szmynews.model.bean.NewsData;
+import com.szmy.szmynews.model.bean.NewsResult;
 import com.szmy.szmynews.presenter.NewsPresenter;
 
 import java.util.ArrayList;
@@ -34,14 +34,13 @@ public class NewsListFragment extends Fragment implements NewsContract.DataView 
     private Context mContext;
     private View mViewRoot;
     private NewsAdapter newsAdapter;
-    private List<SzmyNewsBean> mDataList;
+    private List<NewsData> mDataList;
     private RecyclerView recyclerView;
     private SwipeRefreshLayout refreshLayout;
     private RecyclerListener mListener;
     private int cur = 0;
     private int num = 10;
     private NewsPresenter presenter;
-    private boolean mHaveLoadData;
     private static final String TAG = "ContentFragment";
 
     public NewsListFragment(String keyWord, Context context) {
@@ -71,13 +70,8 @@ public class NewsListFragment extends Fragment implements NewsContract.DataView 
         newsAdapter = new NewsAdapter(mDataList, mContext);
         newsAdapter.setOnItemClickListener(new NewsAdapter.OnItemClickListener() {
             @Override
-            public void onItemClick(View v, SzmyNewsBean newsBean, int position) {
-                //根据点击的item打开详情页面展示更多数据
-                Bundle bundle = new Bundle();
-                bundle.putSerializable("newsBean",newsBean);
-                Intent intent = new Intent(mContext, NewsDetailActivity.class);
-                intent.putExtra("newsDetail",bundle);
-                startActivity(intent);
+            public void onItemClick(View v, NewsData data, int position) {
+                NewsDetailActivity.start(data.getUrl(),mContext);
             }
         });
         mListener = new RecyclerListener();
@@ -88,24 +82,6 @@ public class NewsListFragment extends Fragment implements NewsContract.DataView 
         recyclerView.setLayoutManager(new LinearLayoutManager(mContext));
         recyclerView.setAdapter(newsAdapter);
         recyclerView.addOnScrollListener(mListener);
-        recyclerView.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
-            @Override
-            public boolean onInterceptTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) {
-                return false;
-            }
-
-            @Override
-            public void onTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) {
-
-            }
-
-            @Override
-            public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
-
-            }
-        });
-
-
         refreshLayout = mViewRoot.findViewById(R.id.swipeRefresh);
         refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -139,14 +115,13 @@ public class NewsListFragment extends Fragment implements NewsContract.DataView 
     }
 
     @Override
-    public void onLoadSuccess(NewsDataBean data) {
-        SzmyResult result = data.getResult();
+    public void onLoadSuccess(NewsBean data) {
+        NewsResult result = data.getResult();
         cur += result.getNum();
         int lastPosition = mDataList.size();
         mDataList.addAll(result.getList());
         newsAdapter.notifyDataSetChanged();
         recyclerView.smoothScrollToPosition(lastPosition);
-
         stopRefreshing();
     }
 

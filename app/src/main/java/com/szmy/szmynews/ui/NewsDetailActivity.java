@@ -3,24 +3,18 @@ package com.szmy.szmynews.ui;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
-import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ImageView;
-import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
 import com.szmy.szmynews.R;
-import com.szmy.szmynews.model.bean.SzmyNewsBean;
-
-import java.io.Serializable;
+import com.szmy.szmynews.model.bean.NewsData;
 
 /**
  * 展示新闻的详细内容，通过webView加载新闻的url
@@ -28,7 +22,13 @@ import java.io.Serializable;
 @SuppressLint("SetJavaScriptEnabled")
 public class NewsDetailActivity extends AppCompatActivity {
 
-    private SzmyNewsBean newsBean = null;
+    public static void start(String url, Context context){
+        Intent intent = new Intent(context,NewsDetailActivity.class);
+        intent.putExtra("url",url);
+        context.startActivity(intent);
+    }
+
+    private String mUrl = null;
     private static final String TAG = "NewsDetailActivity";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,8 +47,8 @@ public class NewsDetailActivity extends AppCompatActivity {
                 finish();
             }
         });
+        if (mUrl!=null){
 
-        if (newsBean!=null){
             final WebView webView = findViewById(R.id.webView);
             webView.getSettings().setJavaScriptEnabled(true);
             webView.getSettings().setDomStorageEnabled(true);
@@ -56,8 +56,7 @@ public class NewsDetailActivity extends AppCompatActivity {
             webView.getSettings().setLoadWithOverviewMode(true);
             webView.getSettings().setUseWideViewPort(true);
             webView.setWebViewClient(new WebViewClient());
-            webView.loadUrl(newsBean.getUrl());
-            Log.d(TAG, "initView: "+newsBean.getUrl());
+            webView.loadUrl(mUrl);
 
             webView.setOnKeyListener(new View.OnKeyListener() {
                 @Override
@@ -80,14 +79,6 @@ public class NewsDetailActivity extends AppCompatActivity {
 
     private void initData() {
         Intent intent = getIntent();
-        Bundle newsDetail = intent.getBundleExtra("newsDetail");
-        if (newsDetail != null){
-            newsBean = (SzmyNewsBean) newsDetail.getSerializable("newsBean");
-        }
-    }
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
+        mUrl = intent.getStringExtra("url");
     }
 }

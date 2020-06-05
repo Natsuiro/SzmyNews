@@ -4,14 +4,13 @@ import android.content.Context;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
 import com.bumptech.glide.Glide;
 import com.szmy.szmynews.R;
-import com.szmy.szmynews.model.bean.SzmyNewsBean;
+import com.szmy.szmynews.model.bean.NewsData;
 
 public class NewsItemView extends FrameLayout {
     public NewsItemView(@NonNull Context context) {
@@ -19,7 +18,7 @@ public class NewsItemView extends FrameLayout {
         View.inflate(context, R.layout.item_news_layout,this);
     }
 
-    public void bindView(SzmyNewsBean news){
+    public void bindView(NewsData news){
         if (news!=null){
             TextView newsTitle = findViewById(R.id.newsTitle);
             newsTitle.setText(news.getTitle());
@@ -37,8 +36,11 @@ public class NewsItemView extends FrameLayout {
             source.setText(news.getSrc());
 
             ImageView pic  = findViewById(R.id.pic);
-            Glide.with(this).load(news.getPic()).into(pic);
-
+            if (news.getPic()!=null){
+                Glide.with(this).load(news.getPic()).into(pic);
+            }else{
+                pic.setVisibility(View.GONE);
+            }
         }
 
     }

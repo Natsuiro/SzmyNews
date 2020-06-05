@@ -10,10 +10,8 @@ import android.util.Log;
 import com.google.gson.Gson;
 import com.szmy.szmynews.app.SzmyApplication;
 import com.szmy.szmynews.model.bean.ChannelBean;
-import com.szmy.szmynews.model.bean.NewsDataBean;
-
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.szmy.szmynews.model.bean.NewsBean;
+import com.szmy.szmynews.model.bean.SearchBean;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -32,12 +30,6 @@ import java.net.URL;
 public class SzmyModel {
     private static final String TAG = "SzmyModel";
     private static String FILEPATH = SzmyApplication.instance().getFilesDir().getAbsolutePath();
-    private Handler handler = new Handler(Looper.getMainLooper());
-
-    public void runOnUiThread(Runnable r) {
-        handler.post(r);
-    }
-
     private static SzmyModel instance;
 
     private SzmyModel() {
@@ -60,87 +52,96 @@ public class SzmyModel {
             @Override
             public void run() {
                 String key = "news_channel";
+                ChannelBean channelBean;
                 if (isNetworkConnected()) {
-                    loadNewsChannelFromServer(key, callBack);
+                    channelBean = loadNewsChannelFromServer();
                 } else {
-                    loadNewsChannelFromLocal(key, callBack);
+                    channelBean = loadNewsChannelFromLocal(key);
+                }
+                if (channelBean!=null){
+                    saveData(key,channelBean);
+                    callBack.onResponse(channelBean);
+                }else{
+                    callBack.onFailed("请求失败~");
                 }
             }
         }.start();
     }
 
-    private void loadNewsChannelFromLocal(String key, final SzmyCallBack<ChannelBean> callBack) {
-        final ChannelBean channelBean = readChannel(key);
-        if (channelBean != null) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    callBack.onResponse(channelBean);
+    /**
+     * 根据关键词搜索新闻列表
+     * @param keyWord 关键字
+     * @param callBack 请求回调
+     */
+    public void searchWithKeyWord(final String keyWord, final SzmyCallBack<SearchBean> callBack){
+        new Thread(){
+            @Override
+            public void run() {
+                SearchBean searchBean = null;
+                if (isNetworkConnected()){
+                    //开始真正的逻辑
+                    searchBean = searchWithKeyWordFromServer(keyWord);
+                }else{
+                    callBack.onFailed("网络断开~");
                 }
-            });
-        } else {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    callBack.onFailed("加载失败");
+                if (searchBean!=null){
+                    callBack.onResponse(searchBean);
+                }else{
+                    callBack.onFailed("请求失败~");
                 }
-            });
+            }
+        }.start();
+
+    }
+
+    private <T> T accessData(String urlPath, Class<T> klazz) throws IOException {
+        URL url = new URL(urlPath);
+        //得到connection对象
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        //设置请求方式：get
+        conn.setRequestMethod("GET");
+        //连接
+        conn.connect();
+        //响应码
+        int code = conn.getResponseCode();
+        //响应内容
+        final String message = conn.getResponseMessage();
+        if (code == HttpURLConnection.HTTP_OK) {
+            //请求成功
+            //解析字节流
+            String json = streamToString(conn.getInputStream());
+            Log.d(TAG, "run: " + json);
+            Gson gson = new Gson();
+            return gson.fromJson(json, klazz);
+        } else {//请求失败，从本地加载
+            return null;
         }
     }
 
-    private void loadNewsChannelFromServer(String key, final SzmyCallBack<ChannelBean> callBack) {
+    private SearchBean searchWithKeyWordFromServer(String keyWord) {
         try {
-            //构造url请求路径
-            String urlPath = App.getBaseUrl() + App.getNewsChannel() + "?appkey=" + App.getAppKey();
-            URL url = new URL(urlPath);
-            //得到connection对象
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            //设置请求方式：get
-            conn.setRequestMethod("GET");
-            //连接
-            conn.connect();
-            //响应码
-            int code = conn.getResponseCode();
-            //响应内容
-            final String message = conn.getResponseMessage();
-
-            if (code == HttpURLConnection.HTTP_OK) {
-                //请求成功
-                //解析字节流
-                String json = streamToString(conn.getInputStream());
-                Log.d(TAG, "run: " + json);
-                Gson gson = new Gson();
-                final ChannelBean channelBean;
-                channelBean = gson.fromJson(json, ChannelBean.class);
-                int status = channelBean.getStatus();
-                if (status == 0) {
-                    //缓存数据
-                    saveData(key, channelBean);
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            callBack.onResponse(channelBean);
-                        }
-                    });
-                } else {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            callBack.onFailed(channelBean.getMsg());
-                        }
-                    });
-                }
-            } else {//请求失败，从本地加载
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        callBack.onFailed(message);
-                    }
-                });
-            }
+            String urlPath = App.getBaseUrl() + App.getSearch() + "?appkey=" + App.getAppKey()+
+                    "&&keyword="+keyWord;
+            return accessData(urlPath, SearchBean.class);
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return null;
+    }
+
+    private ChannelBean loadNewsChannelFromLocal(String key) {
+        return readChannel(key);
+    }
+
+    private ChannelBean loadNewsChannelFromServer() {
+        try {
+            //构造url请求路径
+            String urlPath = App.getBaseUrl() + App.getNewsChannel() + "?appkey=" + App.getAppKey();
+            return accessData(urlPath, ChannelBean.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     //从本地文件序列化对象
@@ -164,7 +165,6 @@ public class SzmyModel {
 
         return null;
     }
-
     //将输入流转换为json字符串
     private String streamToString(InputStream inputStream) throws IOException {
         InputStreamReader isr = new InputStreamReader(inputStream);
@@ -176,44 +176,33 @@ public class SzmyModel {
         }
         return sb.toString() + "";
     }
-
     //获取指定新闻列表，并缓存
-    public void loadNews(final String channel, final int start, final int num, final SzmyCallBack<NewsDataBean> callBack) {
+    public void loadNews(final String channel, final int start, final int num, final SzmyCallBack<NewsBean> callBack) {
         Log.d(TAG, "loadNews: " + start);
         new Thread() {
             @Override
             public void run() {
                 String key = channel + "_news_" + start;
+                NewsBean newsBean;
                 if (isNetworkConnected()) {
-                    loadNewsFromServer(key, channel, start, num, callBack);
+                    newsBean = loadNewsFromServer(channel, start, num);
                 } else {
-                    loadNewsFromLocal(key, callBack);
+                    newsBean = loadNewsFromLocal(key);
                 }
-
+                if (newsBean!=null){
+                    callBack.onResponse(newsBean);
+                }else {
+                    callBack.onFailed("请求失败~");
+                }
             }
         }.start();
     }
 
-    private void loadNewsFromLocal(String key, final SzmyCallBack<NewsDataBean> callBack) {
-        final NewsDataBean newsDataBean = readNewsData(key);
-        if (newsDataBean != null) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    callBack.onResponse(newsDataBean);
-                }
-            });
-        } else {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    callBack.onFailed("加载失败");
-                }
-            });
-        }
+    private NewsBean loadNewsFromLocal(String key) {
+        return readNewsData(key);
     }
 
-    private void loadNewsFromServer(String key, String channel, int start, int num, final SzmyCallBack<NewsDataBean> callBack) {
+    private NewsBean loadNewsFromServer(String channel, int start, int num) {
         try {
             //构造url请求路径
             String urlPath = App.getBaseUrl() + App.getNews() +
@@ -221,63 +210,15 @@ public class SzmyModel {
                     "&start=" + start +
                     "&num=" + num +
                     "&appkey=" + App.getAppKey();
-
-            Log.d(TAG, "url: " + urlPath);
-
-            URL url = new URL(urlPath);
-            //得到connection对象
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            //设置请求方式：get
-            conn.setRequestMethod("GET");
-            //连接
-            conn.connect();
-            //响应码
-            int code = conn.getResponseCode();
-            //响应内容
-            final String message = conn.getResponseMessage();
-            if (code == HttpURLConnection.HTTP_OK) {
-                //请求成功
-                //解析字节流
-                String json = streamToString(conn.getInputStream());
-                Log.d(TAG, "loadNews: " + json);
-                Gson gson = new Gson();
-                final NewsDataBean newsDataBean;
-                newsDataBean = gson.fromJson(json, NewsDataBean.class);
-                int status = newsDataBean.getStatus();
-                if (status == 0) {
-                    //缓存数据
-                    saveData(key, newsDataBean);
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            callBack.onResponse(newsDataBean);
-                        }
-                    });
-                } else {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            callBack.onFailed(newsDataBean.getMsg());
-                        }
-                    });
-                }
-            } else {//请求失败，从本地加载
-
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        callBack.onFailed(message);
-                    }
-                });
-            }
-
+            return accessData(urlPath, NewsBean.class);
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return null;
     }
 
     //从本地文件序列化对象
-    private NewsDataBean readNewsData(String key) {
+    private NewsBean readNewsData(String key) {
         String fileName = key + ".data";
         FileInputStream fileInputStream;//打开文件输出流
         ObjectInputStream objectInputStream;//打开对象输出流
@@ -286,7 +227,7 @@ public class SzmyModel {
             try {
                 fileInputStream = new FileInputStream(file);
                 objectInputStream = new ObjectInputStream(fileInputStream);
-                return (NewsDataBean) objectInputStream.readObject();
+                return (NewsBean) objectInputStream.readObject();
             } catch (IOException | ClassNotFoundException e) {
                 e.printStackTrace();
             }
@@ -323,7 +264,10 @@ public class SzmyModel {
         }
     }
 
-    //判断是否有网络连接
+    /**
+     *
+     * @return 是否有网络连接
+     */
     public boolean isNetworkConnected() {
         Context context = SzmyApplication.instance().getApplicationContext();
         if (context != null) {
@@ -339,11 +283,9 @@ public class SzmyModel {
         }
         return false;
     }
-
     //请求回调
     public interface SzmyCallBack<T> {
         void onResponse(T body);
-
         void onFailed(String msg);
     }
 }

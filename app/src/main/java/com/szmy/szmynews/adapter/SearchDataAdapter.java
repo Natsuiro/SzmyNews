@@ -8,28 +8,29 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.szmy.szmynews.model.bean.NewsData;
+import com.szmy.szmynews.model.bean.SearchData;
 import com.szmy.szmynews.widget.NewsItemView;
+import com.szmy.szmynews.widget.SearchDataItemView;
 
 import java.util.List;
 
-public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder> {
-
-    private List<NewsData> mList;
+public class SearchDataAdapter extends RecyclerView.Adapter<SearchDataAdapter.SearchViewHolder> {
+    private List<SearchData> mList;
     private Context mContext;
 
-    public NewsAdapter(List<NewsData> list, Context context) {
+    public SearchDataAdapter(List<SearchData> list, Context context) {
         mList = list;
         mContext = context;
     }
 
     @NonNull
     @Override
-    public NewsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new NewsViewHolder(new NewsItemView(mContext));
+    public SearchViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        return new SearchViewHolder(new SearchDataItemView(mContext));
     }
 
     @Override
-    public void onBindViewHolder(@NonNull NewsViewHolder holder, final int position) {
+    public void onBindViewHolder(@NonNull SearchViewHolder holder, final int position) {
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -39,7 +40,6 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
                 }
             }
         });
-
         holder.itemView.bindView(mList.get(position));
     }
 
@@ -48,10 +48,9 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
         return mList.size();
     }
 
-    static class NewsViewHolder extends RecyclerView.ViewHolder {
-        NewsItemView itemView;
-
-        NewsViewHolder(@NonNull NewsItemView itemView) {
+    static class SearchViewHolder extends RecyclerView.ViewHolder {
+        SearchDataItemView itemView;
+        SearchViewHolder(@NonNull SearchDataItemView itemView) {
             super(itemView);
             this.itemView = itemView;
         }
@@ -68,6 +67,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
 
     //回调接口
     public interface OnItemClickListener {
-        void onItemClick(View v, NewsData newsBean, int position);
+        void onItemClick(View v, SearchData data, int position);
     }
+
 }

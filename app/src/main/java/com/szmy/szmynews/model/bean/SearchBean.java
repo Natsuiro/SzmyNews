@@ -2,11 +2,10 @@ package com.szmy.szmynews.model.bean;
 
 import java.io.Serializable;
 
-public class NewsDataBean implements Serializable {
-
+public class SearchBean implements Serializable {
     private int status;
     private String msg;
-    private SzmyResult result;
+    private SearchResult result;
 
     public int getStatus() {
         return status;
@@ -24,11 +23,11 @@ public class NewsDataBean implements Serializable {
         this.msg = msg;
     }
 
-    public SzmyResult getResult() {
+    public SearchResult getResult() {
         return result;
     }
 
-    public void setResult(SzmyResult result) {
+    public void setResult(SearchResult result) {
         this.result = result;
     }
 }

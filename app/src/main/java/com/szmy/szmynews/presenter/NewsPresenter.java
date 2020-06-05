@@ -4,9 +4,9 @@ import android.util.Log;
 
 import com.szmy.szmynews.contract.NewsContract;
 import com.szmy.szmynews.model.SzmyModel;
-import com.szmy.szmynews.model.bean.NewsDataBean;
+import com.szmy.szmynews.model.bean.NewsBean;
 
-public class NewsPresenter implements NewsContract.Presenter {
+public class NewsPresenter extends BasePresenter implements NewsContract.Presenter {
 
     private NewsContract.DataView mView;
     private static final String TAG = "NewsPresenter";
@@ -33,15 +33,27 @@ public class NewsPresenter implements NewsContract.Presenter {
 
     private void exeLoadNews(String channel,int start,int num) {
 
-        SzmyModel.instance().loadNews(channel, start, num, new SzmyModel.SzmyCallBack<NewsDataBean>() {
+        SzmyModel.instance().loadNews(channel, start, num, new SzmyModel.SzmyCallBack<NewsBean>() {
             @Override
-            public void onResponse(NewsDataBean body) {
-                mView.onLoadSuccess(body);
+            public void onResponse(final NewsBean body) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mView.onLoadSuccess(body);
+                    }
+                });
+
             }
 
             @Override
-            public void onFailed(String msg) {
-                mView.onLoadFailed(msg);
+            public void onFailed(final String msg) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mView.onLoadFailed(msg);
+                    }
+                });
+
             }
         });
 

@@ -2,7 +2,7 @@ package com.szmy.szmynews.model.bean;
 
 import java.io.Serializable;
 
-public class SzmyNewsBean implements Serializable {
+public class NewsData implements Serializable {
 
     private String title;
     private String time;

@@ -3,11 +3,11 @@ package com.szmy.szmynews.model.bean;
 import java.io.Serializable;
 import java.util.List;
 
-public class SzmyResult implements Serializable {
+public class NewsResult implements Serializable {
 
     private String channel;
     private int num;
-    private List<SzmyNewsBean> list;
+    private List<NewsData> list;
 
     public String getChannel() {
         return channel;
@@ -25,11 +25,11 @@ public class SzmyResult implements Serializable {
         this.num = num;
     }
 
-    public List<SzmyNewsBean> getList() {
+    public List<NewsData> getList() {
         return list;
     }
 
-    public void setList(List<SzmyNewsBean> list) {
+    public void setList(List<NewsData> list) {
         this.list = list;
     }
 }
